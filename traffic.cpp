@@ -5,11 +5,12 @@ void traffic_light(){
     char light, car;
     cout<<"Is traffic light present?\n";
     cin>>light;
+    string color;
     while(true){
     
     cout<<"Is red light is on?\n";
-    cin>>light;
-    if(tolower(light=='r')){
+    cin>>color;
+    if(tolower(color=="red")){
         cout<<"Look left\n";
         break;
     }
@@ -45,7 +46,10 @@ int main(){
         cout<<"Check the traffic light\n";
         break;
     }
-     }
+    else{
+        cout<<"walk away\n";
+    }
+    }
     traffic_light();
    
     cout<<"Cross the traffic\n";
