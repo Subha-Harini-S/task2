@@ -1,0 +1,5 @@
+CustomerID,Name,AccountValid,CardValid,FundsAvailable
+101,Subha,1,1,1
+102,Ram,1,1,0
+103,Latha,0,1,1
+104,Krish,1,0,1
