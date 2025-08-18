@@ -1,81 +1,122 @@
 #include <iostream>
-#include <vector>
+#include <fstream>
 #include <string>
 using namespace std;
 
-struct User {
+string database = "car_rental.csv";
+
+void forgotPassword() {
+    cout << "\nEnter username: ";
     string username;
-    string password;
-};
+    cin >> username;
 
-vector<User> loadUsers(const string& filename) {
-    // Dummy loader for illustration
-    return {{"admin", "admin123"}, {"user1", "pass1"}, {"user2", "pass2"}};
-}
+    ifstream fin(database);
+    ofstream temp("temp.csv");
+    string line;
+    bool found = false;
 
-bool login(const vector<User>& users, const string& uname, const string& pass) {
-    for (const auto& user : users) {
-        if (user.username == uname && user.password == pass)
-            return true;
+    while (getline(fin, line)) {
+        size_t pos = line.find(",");
+        string dbUser = line.substr(0, pos);
+        string dbPass = line.substr(pos + 1);
+
+        if (dbUser == username) {
+            found = true;
+            string newPass;
+            cout << "User found. Enter new password: ";
+            cin >> newPass;
+            temp << dbUser << "," << newPass << "\n";
+        } else {
+            temp << line << "\n";
+        }
     }
-    return false;
+
+    fin.close();
+    temp.close();
+    remove(database.c_str());
+    rename("temp.csv", database.c_str());
+
+    if (found)
+        cout << "Password reset successful!\n";
+    else
+        cout << "Username not found!\n";
 }
 
-void updatePassword(const string& filename, const string& uname, const string& newpass) {
-    cout << "Password for " << uname << " updated in " << filename << ".\n";
-}
-
-int main() {
-    string dbFile = "users.csv";
-    vector<User> users = loadUsers(dbFile);
-
-    cout << "Login System\n";
-    cout << "Are you Admin (A) or Registered User (R)? : ";
+void registeredUser() {
+    cout << "\nAre you a registered user? (y/n): ";
     char choice;
     cin >> choice;
 
-    if (choice == 'A' || choice == 'a') {
-        string uname, pass;
-        cout << "Enter Admin username: ";
-        cin >> uname;
-        cout << "Enter Admin password: ";
-        cin >> pass;
+    if (choice == 'y') {
+        string username, password;
+        cout << "Username: ";
+        cin >> username;
+        cout << "Password: ";
+        cin >> password;
 
-        if (login(users, uname, pass) && uname == "admin") {
-            cout << "Admin login successful!\n";
-            cout << "Admin can update all data here...\n";
-        } else {
-            cout << "Admin login failed.\n";
-        }
-    } else if (choice == 'R' || choice == 'r') {
-        string uname, pass;
-        cout << "Enter Username: ";
-        cin >> uname;
-        cout << "Enter Password: ";
-        cin >> pass;
+        ifstream fin(database);
+        string line;
+        bool found = false;
 
-        if (login(users, uname, pass)) {
-            cout << "User login successful!\n";
-            cout << "Welcome, " << uname << "!\n";
-        } else {
-            cout << "Invalid credentials!\n";
-            cout << "Forgot Password? (Y/N): ";
-            char fp;
-            cin >> fp;
-            if (fp == 'Y' || fp == 'y') {
-                string newpass;
-                cout << "Enter new password: ";
-                cin >> newpass;
-                updatePassword(dbFile, uname, newpass);
-                cout << "Password updated successfully!\n";
-            } else {
-                cout << "Returning to main menu...\n";
+        while (getline(fin, line)) {
+            size_t pos = line.find(",");
+            string dbUser = line.substr(0, pos);
+            string dbPass = line.substr(pos + 1);
+            if (dbUser == username && dbPass == password) {
+                found = true;
+                break;
             }
         }
-    } else {
-        cout << "Invalid choice!\n";
-    }
 
-    cout << "End\n";
-    return 0;
+        fin.close();
+
+        if (found) {
+            cout << "Login successful!\n" "Look for desired vehicle\n" "Make payment\n";
+        } else {
+            cout << "Invalid login!\n";
+            cout << "Forgot password? (y/n): ";
+            char fp;
+            cin >> fp;
+            if (fp == 'y')
+                forgotPassword();
+        }
+
+    } else {
+        string username, password;
+        cout << "Enter new username: ";
+        cin >> username;
+        cout << "Enter new password: ";
+        cin >> password;
+        ofstream fout(database, ios::app);
+        fout << username << "," << password << "\n";
+        fout.close();
+        cout << "Registration successful!\n";
+    }
+}
+
+void adminLogin() {
+    cout << "\nAre you admin? (y/n): ";
+    char choice;
+    cin >> choice;
+
+    if (choice == 'y') {
+        string user, pass;
+        cout << "Admin Username: ";
+        cin >> user;
+        cout << "Admin Password: ";
+        cin >> pass;
+
+        if (user == "admin" && pass == "admin123") {
+            cout << "Admin login successful!\n1. Update car library\n2. Answer customer queries\n""3. Logout\n";
+        } else {
+            cout << "Invalid admin credentials!\n";
+        }
+    } else {
+        registeredUser();
+    }
+}
+
+int main() {
+    cout << "CAR RENTAL SYSTEM\n";
+    adminLogin();
 }
