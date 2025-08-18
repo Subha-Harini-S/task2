@@ -2,114 +2,143 @@
 #include <fstream>
 #include <string>
 #include <ctime>
-#include <cstring>
 using namespace std;
-
-void logErrorToCSV(const string& errorType, const string& description) {
-    ofstream file("error_database.csv", ios::app);
-    if (!file) {
-        cerr << "Error opening error_database.csv" << endl;
+ 
+void logErrorToCSV(const string &description) {
+    ofstream file("error.csv", ios::app);
+    if (!file.is_open()) {
+        cerr << "Error opening error.csv" << endl;
         return;
     }
-
+ 
     time_t now = time(0);
-    char* dt = ctime(&now);
-    if (dt != nullptr && strlen(dt) > 0) {
-        dt[strlen(dt) - 1] = '\0';
-    }
-
-    file << errorType << "," << description << "," << dt << "\n";
+    string dt = ctime(&now);
+    dt.pop_back();
+ 
+    file << "Technical Error," << description << "," << dt << "\n";
     file.close();
 }
-
-void answerQuestion() {
-    cout << "Customer enquiry answered successfully.\n";
+ 
+void feedback(){
+     cout << "feedback(0/1)" << endl;
+     bool feedback;
+     cin >> feedback;
+     if(feedback){
+       cout << "Take survey" << endl;
+       exit(0);
+     }
+     else{
+        cout << "End" << endl;
+     }
+     
 }
-
-void redirectToSalesSupport() {
-    cout << "Redirecting to sales support...\n";
-}
-
-bool contactTechnicalTeam() {
-    cout << "Technical team contacted.\n";
-    return true;
-}
-
-bool testIssue() {
-    cout << "Testing issue...\n";
-    return false;
-}
-
-void contactCustomerForInfo() {
-    cout << "Contacting customer for more information...\n";
-}
-
-void confirmIssueFixed() {
-    cout << "Issue confirmed fixed with customer.\n";
-}
-
-void getFeedback() {
-    cout << "Feedback received.\n";
-}
-
-void survey() {
-    cout << "Survey completed.\n";
-}
-
-void errorReport() {
-    cout << "Error report generated.\n";
-    logErrorToCSV("Technical Error", "Unresolved issue during testing");
-}
-
-void errorAnalysis() {
-    cout << "Error analysis completed.\n";
-}
-
-bool solveIssue() {
-    cout << "Attempting to solve issue...\n";
-    return true;
-}
-
-int main() {
-    cout << "Customer found issue.\n";
-    cout << "Customer contacted customer service.\n";
-
-    int issueType;
-    cout << "Enter issue type (1-Enquiry, 2-Sales, 3-Technical, 4-New Issue): ";
-    cin >> issueType;
-
-    switch (issueType) {
-        case 1:
-            answerQuestion();
-            break;
-        case 2:
-            redirectToSalesSupport();
-            break;
-        case 3:
-            if (contactTechnicalTeam()) {
-                confirmIssueFixed();
-                getFeedback();
+ 
+void errorReport(){
+   cout << "Error analysis" << endl;
+   cout << "Solve the issue?(y/n)" << endl;
+    cout << "Is the issue fixed(y/n)" << endl;
+    char isfixed;
+    cin >> isfixed;
+    if(tolower(isfixed)=='y'){
+        return;
+    }
+    else{
+         logErrorToCSV("Issue not resolved");
+        errorReport();
+    }
+   }
+ 
+ 
+ 
+ 
+void newissue(){
+    while(true){
+            cout << "Is there is any new issue(y/n)" << endl;
+            char isnew;
+            cin >> isnew;
+            if(tolower(isnew)=='y'){
+                cout << "Test the issue" << endl;
+                return;
             }
-            break;
-        case 4:
-            if (testIssue()) {
-                confirmIssueFixed();
-            } else {
-                contactCustomerForInfo();
-                errorReport();
-                errorAnalysis();
-                if (solveIssue()) {
-                    confirmIssueFixed();
-                    getFeedback();
-                    survey();
+            else{
+                cout << "Resolve the issue" << endl;
+                return;
+            }
+}
+}
+ 
+void issue(){
+     char issuesales;
+        cout << "Is there is any issue in sales?(y/n)" << endl;
+        cin >> issuesales;
+        if(tolower(issuesales)=='y'){
+            cout << "Redirect to sales support" << endl;
+        }
+        else{
+            cout << "Is there is any technical issue?(y/n)" << endl;
+            char istechissue;
+            cin >> istechissue;
+            if(tolower(istechissue)=='y'){
+               cout << "Contact technical team" << endl;
+            }
+            else
+            newissue();
+        }
+            cout << "Fixed the issue" << endl;
+          
+}
+ 
+ 
+void serviceissues(){
+    cout << "Enquiry(y/n)" << endl;
+    char enq;
+    cin >> enq;
+    if(tolower(enq)=='y'){
+        cout << "Answer the question" << endl;
+        // feedback();
+    }
+    while(true){
+    char simulation;
+                cout << "Simulate the issue(y/n)" << endl;
+                cin >> simulation;
+                if(tolower(simulation)=='y'){
+                    errorReport();
+                    break;
+                }
+                else{
+                    cout << "Contact customer for information" << endl;
                 }
             }
-            break;
-        default:
-            cout << "Invalid input.\n";
+            cout << "Confirm issue fixed with customer" << endl;
+            feedback();
+ 
+    else{
+        issue();
     }
-
-    cout << "Process completed.\n";
-    return 0;
+            
+        }
+ 
+ 
+int main(){
+    cout << "Customer has reported an issue" << endl;
+    cout << "Customer contacted customer service department" << endl;
+    serviceissues();
+    cout << "Confirm issue fixed with customer" << endl;
+    //feedback();
+    // while(true){
+    // char simulation;
+    //             cout << "Simulate the issue(y/n)" << endl;
+    //             cin >> simulation;
+    //             if(tolower(simulation)=='y'){
+    //                 errorReport();
+    //                 break;
+    //             }
+    //             else{
+    //                 cout << "Contact customer for information" << endl;
+    //             }
+    //         }
+    //         cout << "Confirm issue fixed with customer" << endl;
+    //         feedback();
+ 
+ 
 }
-
