@@ -1,77 +1,75 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <string>
 using namespace std;
 
-bool verifyPayment(bool cardValid, bool fundsAvailable) {
-    cout << "Payment verified by card network...\n";
-    if (!cardValid) {
-        cout << "Card not valid. Payment failed.\n";
-        return false;
+bool card() {
+    while (true) {
+        char cardValid;
+        cout << "Is Card Valid? (y/n): ";
+        cin >> cardValid;
+        if (tolower(cardValid) != 'y') {
+            cout << "Card Invalid. Transaction Failed.\n";
+            continue;
+        }
+
+        char funds;
+        cout << "Are Funds Available? (y/n): ";
+        cin >> funds;
+        if (tolower(funds) != 'y') {
+            cout << "Insufficient Funds. Transaction Failed.\n";
+            continue;
+        }
+
+        char bankVerify;
+        cout << "Payment Verified by Bank? (y/n): ";
+        cin >> bankVerify;
+        if (tolower(bankVerify) != 'y') {
+            cout << "Bank Rejected Transaction.\n";
+            continue;
+        }
+
+        break;
     }
-    if (!fundsAvailable) {
-        cout << "Insufficient funds. Payment failed.\n";
-        return false;
-    }
-    cout << "Payment verified by bank.\n";
     return true;
 }
 
-void processTransaction(string id, string name, bool accountValid, bool cardValid, bool fundsAvailable) {
-    cout << "\nOrder placed by client: " << name << "\n";
-    if (accountValid) {
-        cout << "Account valid.\n";
-        if (verifyPayment(cardValid, fundsAvailable)) {
-            cout << "Transaction complete.\n";
-            cout << "Card holder receives statement at the end of cycle.\n";
-        }
-    } else {
-        cout << "Account not valid. Transaction failed.\n";
-    }
-}
-
 int main() {
-    ifstream file("dummy.csv");
-    if (!file.is_open()) {
-        cout << "Error: Could not open dummy.csv\n";
-        return 1;
-    }
+    cout << "Order placed By the client \nEnter card number:\n";
+    string cardNumber;
+    cin >> cardNumber;
 
-    string line;
-    getline(file, line);
-
-    string customerID;
-    cout << "Enter Customer ID to process transaction: ";
-    cin >> customerID;
-
-    bool found = false;
-    while (getline(file, line)) {
-        stringstream ss(line);
-        string id, name, acc, card, funds;
-
-        getline(ss, id, ',');
-        getline(ss, name, ',');
-        getline(ss, acc, ',');
-        getline(ss, card, ',');
-        getline(ss, funds, ',');
-
-        if (id == customerID) {
-            found = true;
-            bool accountValid = (acc == "1");
-            bool cardValid = (card == "1");
-            bool fundsAvailable = (funds == "1");
-
-            processTransaction(id, name, accountValid, cardValid, fundsAvailable);
-            break;
+    if (!card()) {
+        cout << "Transaction Status: Failed\n";
+        cout << "Statement will be given.\n";
+        ofstream file("creditcard.csv", ios::app);
+        if (file.is_open()) {
+            file << cardNumber << "," << "Failed" << "\n";
+            file.close();
         }
+        return 0;
     }
 
-    if (!found) {
-        cout << "Customer not found in database.\n";
+    char accValid;
+    while (true) {
+        cout << "Is Account Valid? (y/n): ";
+        cin >> accValid;
+        if (tolower(accValid) != 'y') {
+            cout << "Account Invalid. Transaction Failed.\n";
+            continue;
+        }
+        cout << "Account valid\n";
+        break;
     }
 
-    file.close();
-    cout << "\nEnd.\n";
+    cout << "Transaction Status: Success\n";
+    cout << "Statement will be given.\n";
+
+    ofstream file("creditcard.csv", ios::app);
+    if (file.is_open()) {
+        file << cardNumber << "," << "Success" << "\n";
+        file.close();
+    }
+
     return 0;
 }
